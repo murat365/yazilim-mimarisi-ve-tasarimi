@@ -149,6 +149,7 @@ static void Main(string[] args)
    
 }
 ```
+![Image of Class](https://github.com/murat365/yazilim-mimarisi-ve-tasarimi/blob/master/Adapter.png)
 
 
 
