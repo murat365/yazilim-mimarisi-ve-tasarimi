@@ -92,3 +92,63 @@ Caretaker Class: Bu sınıf memento nesnesini ya da geri dönüş n adım geriye
         }
     }
 ```
+## Adapter tasarım deseni
+Adapter tasarım deseni, structural tasarım desenlerinden biridir. Bu tasarım deseni, birbiriyle ilişkili olmayan interface'lerin birlikte çalışmasını sağlar. Bu işlemi ise, bir sınıfın interface'ini diğer bir interface'e dönüştürerek yapar.  
+
+Adapter tasarım deseni ismini gerçek hayattaki adaptörlerden almıştır. Örneğin, telefon şarz cihazı bir adaptördür. 240V'luk gerilimi 5V'a dönüştürür. Mobil şarz cihazı, mobil şarz soketi ile duvar soketi arasında bir adaptör görevi görür.  
+
+Öncelikle, geliştirdiğimiz istemcinin beklediği arayüzü tasarlamamız gerekiyor (fişinizi nereye takabiliyorsunuz ?) . Sonra da adapte edilecek nesneye erişen bir sınıfa ihtiyacımız olacak (duvardaki prizin neye ihtiyacı var ?).Kodları bir senaryo yardımıyla yazıyoruz.Diyelim ki, POS cihazından gelen veriyi okumak üzere bir uygulama yazıyorsunuz. Cihazın API’si tarafından nesnemiz de aşağıdaki gibi olsun:
+```c#
+public class XBankPOSReader
+{
+
+   public string ReadFromCard()
+ 
+   {
+       
+      return "X bank Pos cihazı çalışıyor";
+    
+    }
+
+} 
+```
+Daha önce de belirttiğimiz gibi, bu örnekte de düşünmemiz gereken şeylerden biri şu olmalı: uygulama sadece bir POS cihazına (ve onun API’sine) bağlı olmamalı.Öyleyse, tüm POS cihazları ile çalışabilecek bir adaptör arayüzü tasarlamamız gerekiyor:
+```c#
+public interface ICardAdapter
+
+{
+
+   public string ReadCardData();
+
+}
+```
+İstemci, işte bu arayüz üzerinden cihaz API’si ile iletişim kurabilecek. POS cihazı ile çalışacak olan her sınıfı bu interface’den implemente etmemiz gerekiyor. Şu anda elimizde bulunan X Bankın POS cihazı için gereken sınıfımızı aşağıdaki gibi yazıyoruz:  
+```c#
+public class XBankCardReaderAdapter:ICardReaderAdapter
+{
+
+    public string ReadCardData()
+    {
+
+      XBankPOSReader posReader = new XBankPOSReader();
+      return posReaderFromCard();
+ 
+      }
+}
+  ``` 
+Bu sınıfa dikkat etmeliyiz. Tanımladığımız interface’den gelen ReadCardData() metodu, adapte edilecek nesnenin (XBankPOSReader) ilgili metodunu (ReadFromCard()) çağırıyor.  
+
+Yani istemci, XBankCardReaderAdapter adaptör nesnesine erişecek (şarj aletini adaptöre takacak). Adaptör de, asıl nesne üzerindeki ihtiyacımız olan metodu çağıracak (adaptörü duvardaki prize takacak).İstemcinin kodlarını aşağıda belirtiyoruz:  
+```c#
+static void Main(string[] args)
+{
+
+   ICardReaderAdapter reader = new XBankCardReaderAdapter();
+   var result = reader.ReadCardData();
+   Console.WriteLine(result);
+   
+}
+```
+
+
+
